@@ -46,7 +46,7 @@ def get_active_lock_screen(request):
         return JsonResponse({'logo_url': logo_url})
     else:
         return JsonResponse({'error': 'No active lock screen found'}, status=404)
-s
+
 # View to manage domain notifications
 def manage_domains(request):
     if request.method == 'POST':
