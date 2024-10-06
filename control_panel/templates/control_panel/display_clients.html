@@ -15,6 +15,8 @@
                     <th>Name</th>
                     <th>IP Address</th>
                     <th>Status</th>
+                    <th>System Name</th>
+                    <th>OS</th>
                     <th>Last Domain Accessed</th>
                 </tr>
             </thead>
@@ -25,6 +27,8 @@
                         <td>{{ client.name }}</td>
                         <td>{{ client.ip_address }}</td>
                         <td>{{ client.status }}</td>
+                        <td>{{ client.systemname }}</td>
+                        <td>{{ client.OS }}</td>
                         <td>{{ client.last_domain_accessed }}</td>
                     </tr>
                 {% endfor %}

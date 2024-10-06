@@ -87,6 +87,8 @@ def receive_clients(request):
                 name = client.get('name', 'Unknown')
                 ip_address = client.get('ip_address', '0.0.0.0')
                 status = client.get('status', 'disconnected')
+                systemname = client.get('systemname', 'unknown')
+                OS = client.get('OS', 'unknown')
                 last_domain_accessed = client.get('last_domain_accessed', 'www.google.com')
                 
                 # Ensure client_id is present
@@ -96,6 +98,8 @@ def receive_clients(request):
                         name=name,
                         ip_address=ip_address,
                         status=status,
+                        systemname=systemname,
+                        OS=OS,
                         last_domain_accessed=last_domain_accessed,
                     )
             

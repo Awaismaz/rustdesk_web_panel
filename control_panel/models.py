@@ -16,6 +16,8 @@ class ConnectedClient(models.Model):
     status = models.CharField(max_length=50, choices=[('connected', 'Connected'), ('disconnected', 'Disconnected')], default='connected')
     last_seen = models.DateTimeField(auto_now=True)
     last_domain_accessed= models.CharField(max_length=255, default='www.google.com')
-
+    systemname= models.CharField(max_length=255, default='unknown')
+    OS= models.CharField(max_length=255, default='unknown')
+    
     def __str__(self):
         return f"{self.name} ({self.client_id})"
