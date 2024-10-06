@@ -69,13 +69,10 @@ def manage_domains(request):
     return render(request, 'control_panel/domains.html', {'domains': domains})
 
 
-
-
 @csrf_exempt
 def receive_clients(request):
     if request.method == 'POST':
         try:
-            # Decode and print the raw request body
             raw_data = request.body.decode('utf-8')
             print("Raw request body:", raw_data)
 
@@ -87,25 +84,37 @@ def receive_clients(request):
             clients_data = json.loads(data.get('clients', '[]'))
             print("Parsed clients data:", clients_data)
 
+
+            
+            # Flush the existing connected clients data
+            ConnectedClient.objects.all().delete()
+            
             # Now you can process the clients data as usual
             for client in clients_data:
+                # Use .get() method to safely access keys, avoiding KeyError
                 client_id = client.get('id')
                 name = client.get('name', 'Unknown')
+                ip_address = client.get('ip_address', '0.0.0.0')
                 status = client.get('status', 'disconnected')
                 systemname = client.get('systemname', 'unknown')
                 OS = client.get('OS', 'unknown')
+                last_domain_accessed = client.get('last_domain_accessed', 'www.google.com')
                 
-                # Do something with the data, e.g., save to the database
-                print(f"Client ID: {client_id}, Name: {name}, Status: {status}, OS: {OS}")
-
+                # Ensure client_id is present
+                if client_id:
+                    ConnectedClient.objects.create(
+                        client_id=client_id,
+                        name=name,
+                        ip_address=ip_address,
+                        status=status,
+                        systemname=systemname,
+                        OS=OS,
+                        last_domain_accessed=last_domain_accessed,
+                    )
+            
             return JsonResponse({'status': 'success'}, status=200)
-
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
-        except Exception as e:
-            print("An error occurred:", str(e))
-            return JsonResponse({'error': str(e)}, status=500)
-
+            return JsonResponse({'error': 'Invalid data format'}, status=400)
     return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 # Simulated storage (you'll likely replace this with database queries)
