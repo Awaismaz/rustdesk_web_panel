@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from .models import LockScreen, DomainNotification
 from django.core.files.storage import FileSystemStorage
-
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import ConnectedClient
+from .models import LockScreen
 # Dashboard view (optional)
 def dashboard(request):
     return render(request, 'control_panel/dashboard.html')
@@ -63,3 +67,74 @@ def manage_domains(request):
     # Get all domains
     domains = DomainNotification.objects.all()
     return render(request, 'control_panel/domains.html', {'domains': domains})
+
+
+
+
+@csrf_exempt
+def receive_clients(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            
+            # Flush the existing connected clients data
+            ConnectedClient.objects.all().delete()
+            
+            # Insert new connected clients
+            for client in data.get('clients', []):
+                # Use .get() method to safely access keys, avoiding KeyError
+                client_id = client.get('id')
+                name = client.get('name', 'Unknown')
+                ip_address = client.get('ip_address', '0.0.0.0')
+                status = client.get('status', 'disconnected')
+                last_domain_accessed = client.get('last_domain_accessed', 'www.google.com')
+                
+                # Ensure client_id is present
+                if client_id:
+                    ConnectedClient.objects.create(
+                        client_id=client_id,
+                        name=name,
+                        ip_address=ip_address,
+                        status=status,
+                        last_domain_accessed=last_domain_accessed,
+                    )
+            
+            return JsonResponse({'status': 'success'}, status=200)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid data format'}, status=400)
+    return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+
+# Simulated storage (you'll likely replace this with database queries)
+def display_clients(request):
+    clients = ConnectedClient.objects.all()
+    return render(request, 'control_panel/display_clients.html', {'clients': clients})
+
+
+
+def delete_screen(request):
+    if request.method == 'POST':
+        screen_id = request.POST.get('screen_id')
+        try:
+            screen = LockScreen.objects.get(id=screen_id)
+            screen.delete()  # Delete the selected screen
+        except LockScreen.DoesNotExist:
+            pass  # Handle the case where the screen doesn't exist
+
+    return redirect('manage_lock_screens')
+
+def set_active_screen(request):
+    if request.method == 'POST':
+        screen_id = request.POST.get('screen_id')
+        try:
+            # Deactivate all lock screens first
+            LockScreen.objects.all().update(is_active=False)
+
+            # Activate the selected lock screen
+            screen = LockScreen.objects.get(id=screen_id)
+            screen.is_active = True
+            screen.save()
+
+        except LockScreen.DoesNotExist:
+            pass  # Handle the case where the screen doesn't exist
+
+    return redirect('manage_lock_screens')

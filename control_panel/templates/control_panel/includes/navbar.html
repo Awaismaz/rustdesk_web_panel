@@ -1,0 +1,25 @@
+<!-- templates/includes/navbar.html -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">RustDesk Control Panel</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'upload_logo' %}">Upload Lock Screen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'manage_lock_screens' %}">Manage Lock Screens</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'manage_domains' %}">Manage Domain Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'display_clients' %}">View Connected Clients</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
