@@ -75,40 +75,37 @@ def manage_domains(request):
 def receive_clients(request):
     if request.method == 'POST':
         try:
-            # Print the raw request body for debugging
-            print("Raw request body:", request.body)
-            
-            data = json.loads(request.body.decode('utf-8'))
-            
-            # Flush the existing connected clients data
-            ConnectedClient.objects.all().delete()
-            
-            # Insert new connected clients
-            for client in data.get('clients', []):
-                # Use .get() method to safely access keys, avoiding KeyError
+            # Decode and print the raw request body
+            raw_data = request.body.decode('utf-8')
+            print("Raw request body:", raw_data)
+
+            # Load the outer JSON
+            data = json.loads(raw_data)
+            print("Parsed outer JSON:", data)
+
+            # The 'clients' field is still a string, so load it again as JSON
+            clients_data = json.loads(data.get('clients', '[]'))
+            print("Parsed clients data:", clients_data)
+
+            # Now you can process the clients data as usual
+            for client in clients_data:
                 client_id = client.get('id')
                 name = client.get('name', 'Unknown')
-                ip_address = client.get('ip_address', '0.0.0.0')
                 status = client.get('status', 'disconnected')
                 systemname = client.get('systemname', 'unknown')
                 OS = client.get('OS', 'unknown')
-                last_domain_accessed = client.get('last_domain_accessed', 'www.google.com')
                 
-                # Ensure client_id is present
-                if client_id:
-                    ConnectedClient.objects.create(
-                        client_id=client_id,
-                        name=name,
-                        ip_address=ip_address,
-                        status=status,
-                        systemname=systemname,
-                        OS=OS,
-                        last_domain_accessed=last_domain_accessed,
-                    )
-            
+                # Do something with the data, e.g., save to the database
+                print(f"Client ID: {client_id}, Name: {name}, Status: {status}, OS: {OS}")
+
             return JsonResponse({'status': 'success'}, status=200)
+
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid data format'}, status=400)
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        except Exception as e:
+            print("An error occurred:", str(e))
+            return JsonResponse({'error': str(e)}, status=500)
+
     return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 # Simulated storage (you'll likely replace this with database queries)
