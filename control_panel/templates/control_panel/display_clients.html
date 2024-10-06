@@ -18,6 +18,7 @@
                     <th>System Name</th>
                     <th>OS</th>
                     <th>Last Domain Accessed</th>
+                    <th>Last Seen</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +31,7 @@
                         <td>{{ client.systemname }}</td>
                         <td>{{ client.OS }}</td>
                         <td>{{ client.last_domain_accessed }}</td>
+                        <td>{{ client.last_seen }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
