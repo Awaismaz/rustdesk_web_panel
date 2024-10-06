@@ -7,9 +7,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import ConnectedClient
 from .models import LockScreen
-from django.utils import timezone
-from datetime import timedelta
-
 # Dashboard view (optional)
 def dashboard(request):
     return render(request, 'control_panel/dashboard.html')
@@ -120,20 +117,12 @@ def receive_clients(request):
             return JsonResponse({'error': 'Invalid data format'}, status=400)
     return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
-
-
+# Simulated storage (you'll likely replace this with database queries)
 def display_clients(request):
-    # Get the current time and calculate the threshold for last seen
-    time_threshold = timezone.now() - timedelta(minutes=40)
-
-    # Filter clients based on last seen timestamp
-    clients = ConnectedClient.objects.filter(last_seen__gte=time_threshold)
-
-    # Optionally, delete records older than 10 minutes
-    ConnectedClient.objects.filter(last_seen__lt=time_threshold).delete()
-
-    # Pass the filtered clients to the template
+    clients = ConnectedClient.objects.all()
     return render(request, 'control_panel/display_clients.html', {'clients': clients})
+
+
 
 def delete_screen(request):
     if request.method == 'POST':
