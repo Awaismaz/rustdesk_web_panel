@@ -124,7 +124,7 @@ def receive_clients(request):
 
 def display_clients(request):
     # Get the current time and calculate the threshold for last seen
-    time_threshold = timezone.now() - timedelta(minutes=10)
+    time_threshold = timezone.now() - timedelta(minutes=40)
 
     # Filter clients based on last seen timestamp
     clients = ConnectedClient.objects.filter(last_seen__gte=time_threshold)
