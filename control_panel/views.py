@@ -41,10 +41,12 @@ def manage_lock_screens(request):
 def get_active_lock_screen(request):
     selected_screen = LockScreen.objects.filter(is_active=True).first()
     if selected_screen:
-        return JsonResponse({'logo_url': selected_screen.logo.url})
+        # Build the full URL for the logo
+        logo_url = request.build_absolute_uri(selected_screen.logo.url)
+        return JsonResponse({'logo_url': logo_url})
     else:
         return JsonResponse({'error': 'No active lock screen found'}, status=404)
-
+s
 # View to manage domain notifications
 def manage_domains(request):
     if request.method == 'POST':
