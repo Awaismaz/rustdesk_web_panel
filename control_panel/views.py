@@ -75,6 +75,9 @@ def manage_domains(request):
 def receive_clients(request):
     if request.method == 'POST':
         try:
+            # Print the raw request body for debugging
+            print("Raw request body:", request.body)
+            
             data = json.loads(request.body.decode('utf-8'))
             
             # Flush the existing connected clients data
